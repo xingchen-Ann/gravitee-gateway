@@ -157,9 +157,13 @@ public class ApiReactorHandler extends AbstractReactorHandler implements Initial
         processorContext.setRequest(invokeRequest);
 
         // Plug server request stream to request processor stream
-        invokeRequest
-                .bodyHandler(processor::write)
-                .endHandler(aVoid -> processor.end());
+        invokeRequest.bodyHandler(processor::write);
+
+        if (invokeRequest.ended()) {
+            processor.end();
+        } else {
+            invokeRequest.endHandler(result -> processor.end());
+        }
     }
 
     private void handleProxyResponse(final ProcessorContext processorContext, final ProxyResponse proxyResponse, final long serviceInvocationStart, final Handler<Response> handler) {
