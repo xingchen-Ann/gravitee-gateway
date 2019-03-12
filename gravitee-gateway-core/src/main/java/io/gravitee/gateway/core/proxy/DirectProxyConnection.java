@@ -15,6 +15,7 @@
  */
 package io.gravitee.gateway.core.proxy;
 
+import io.gravitee.common.http.DefaultHttpHeaders;
 import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.http.HttpHeadersValues;
 import io.gravitee.gateway.api.buffer.Buffer;
@@ -63,7 +64,7 @@ public class DirectProxyConnection implements ProxyConnection {
         private Handler<Buffer> bodyHandler;
         private Handler<Void> endHandler;
 
-        private final HttpHeaders httpHeaders = new HttpHeaders();
+        private final HttpHeaders httpHeaders = new DefaultHttpHeaders();
 
         private final int statusCode;
 

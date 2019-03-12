@@ -29,7 +29,6 @@ import io.gravitee.definition.model.ssl.pem.PEMTrustStore;
 import io.gravitee.definition.model.ssl.pkcs12.PKCS12KeyStore;
 import io.gravitee.definition.model.ssl.pkcs12.PKCS12TrustStore;
 import io.gravitee.gateway.api.Connector;
-import io.gravitee.gateway.api.buffer.Buffer;
 import io.gravitee.gateway.api.proxy.ProxyConnection;
 import io.gravitee.gateway.api.proxy.ProxyRequest;
 import io.gravitee.gateway.core.endpoint.EndpointException;
@@ -172,7 +171,7 @@ public class VertxHttpClient extends AbstractLifecycleComponent<Connector> imple
         proxyClientResponse.pause();
 
         // Copy body content
-        clientResponse.handler(event -> proxyClientResponse.bodyHandler().handle(Buffer.buffer(event.getBytes())));
+        clientResponse.handler(event -> proxyClientResponse.bodyHandler().handle(VertxBuffer.of(event)));
 
         // Signal end of the response
         clientResponse.endHandler(v -> proxyClientResponse.endHandler().handle(null));

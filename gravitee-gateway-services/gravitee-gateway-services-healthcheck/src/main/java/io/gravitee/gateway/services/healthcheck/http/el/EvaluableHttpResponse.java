@@ -15,6 +15,7 @@
  */
 package io.gravitee.gateway.services.healthcheck.http.el;
 
+import io.gravitee.common.http.DefaultHttpHeaders;
 import io.gravitee.common.http.HttpHeaders;
 import io.vertx.core.http.HttpClientResponse;
 
@@ -26,7 +27,7 @@ public final class EvaluableHttpResponse {
 
     private final int statusCode;
     private final String content;
-    private final HttpHeaders httpHeaders = new HttpHeaders();
+    private final HttpHeaders httpHeaders = new DefaultHttpHeaders();
 
     public EvaluableHttpResponse(final HttpClientResponse response, final String content) {
         this.statusCode = response.statusCode();

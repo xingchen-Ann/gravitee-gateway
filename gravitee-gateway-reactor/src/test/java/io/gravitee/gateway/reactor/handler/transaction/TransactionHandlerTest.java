@@ -15,7 +15,7 @@
  */
 package io.gravitee.gateway.reactor.handler.transaction;
 
-import io.gravitee.common.http.HttpHeaders;
+import io.gravitee.common.http.DefaultHttpHeaders;
 import io.gravitee.common.utils.UUID;
 import io.gravitee.gateway.api.Request;
 import io.gravitee.gateway.api.Response;
@@ -48,8 +48,8 @@ public class TransactionHandlerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        when(request.headers()).thenReturn(new HttpHeaders());
-        when(response.headers()).thenReturn(new HttpHeaders());
+        when(request.headers()).thenReturn(new DefaultHttpHeaders());
+        when(response.headers()).thenReturn(new DefaultHttpHeaders());
         when(request.metrics()).thenReturn(Metrics.on(System.currentTimeMillis()).build());
     }
 

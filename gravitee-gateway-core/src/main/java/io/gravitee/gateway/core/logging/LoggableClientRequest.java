@@ -15,6 +15,7 @@
  */
 package io.gravitee.gateway.core.logging;
 
+import io.gravitee.common.http.DefaultHttpHeaders;
 import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.gateway.api.Request;
 import io.gravitee.gateway.api.RequestWrapper;
@@ -44,7 +45,7 @@ public class LoggableClientRequest extends RequestWrapper {
         log.setClientRequest(new io.gravitee.reporter.api.common.Request());
         log.getClientRequest().setMethod(this.method());
         log.getClientRequest().setUri(this.uri());
-        log.getClientRequest().setHeaders(new HttpHeaders(this.headers()));
+        log.getClientRequest().setHeaders(new DefaultHttpHeaders(this.headers()));
     }
 
     @Override

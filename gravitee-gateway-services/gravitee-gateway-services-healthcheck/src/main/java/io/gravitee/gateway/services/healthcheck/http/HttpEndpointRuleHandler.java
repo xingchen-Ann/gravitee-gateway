@@ -16,6 +16,7 @@
 package io.gravitee.gateway.services.healthcheck.http;
 
 import io.gravitee.alert.api.event.Event;
+import io.gravitee.common.http.DefaultHttpHeaders;
 import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.http.HttpStatusCode;
 import io.gravitee.definition.model.HttpClientSslOptions;
@@ -326,13 +327,13 @@ public class HttpEndpointRuleHandler implements Handler<Long> {
                         request.setBody(step.getRequest().getBody());
 
                         if (step.getRequest().getHeaders() != null) {
-                            HttpHeaders reqHeaders = new HttpHeaders();
+                            HttpHeaders reqHeaders = new DefaultHttpHeaders();
                             step.getRequest().getHeaders().forEach(httpHeader -> reqHeaders.put(httpHeader.getName(), Collections.singletonList(httpHeader.getValue())));
                             request.setHeaders(reqHeaders);
                         }
 
                         // Extract headers
-                        HttpHeaders headers = new HttpHeaders();
+                        HttpHeaders headers = new DefaultHttpHeaders();
                         response.headers().names().forEach(headerName ->
                                 headers.put(headerName, response.headers().getAll(headerName)));
                         healthResponse.setHeaders(headers);
@@ -363,7 +364,7 @@ public class HttpEndpointRuleHandler implements Handler<Long> {
                     // Extract request information
                     request.setBody(step.getRequest().getBody());
                     if (step.getRequest().getHeaders() != null) {
-                        HttpHeaders reqHeaders = new HttpHeaders();
+                        HttpHeaders reqHeaders = new DefaultHttpHeaders();
                         step.getRequest().getHeaders().forEach(httpHeader -> reqHeaders.put(httpHeader.getName(), Collections.singletonList(httpHeader.getValue())));
                         request.setHeaders(reqHeaders);
                     }

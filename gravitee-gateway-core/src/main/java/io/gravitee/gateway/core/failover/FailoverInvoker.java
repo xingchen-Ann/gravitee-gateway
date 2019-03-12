@@ -15,6 +15,7 @@
  */
 package io.gravitee.gateway.core.failover;
 
+import io.gravitee.common.http.DefaultHttpHeaders;
 import io.gravitee.common.http.HttpHeaders;
 import io.gravitee.common.http.HttpStatusCode;
 import io.gravitee.gateway.api.ExecutionContext;
@@ -131,7 +132,7 @@ public class FailoverInvoker extends EndpointInvoker implements InitializingBean
 
         @Override
         public HttpHeaders headers() {
-            return new HttpHeaders();
+            return new DefaultHttpHeaders();
         }
 
         @Override

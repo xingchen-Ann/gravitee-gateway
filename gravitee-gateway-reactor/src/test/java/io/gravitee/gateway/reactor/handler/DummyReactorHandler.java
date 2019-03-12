@@ -15,7 +15,7 @@
  */
 package io.gravitee.gateway.reactor.handler;
 
-import io.gravitee.common.http.HttpHeaders;
+import io.gravitee.common.http.DefaultHttpHeaders;
 import io.gravitee.common.http.HttpStatusCode;
 import io.gravitee.gateway.api.ExecutionContext;
 import io.gravitee.gateway.api.Request;
@@ -90,7 +90,7 @@ public class DummyReactorHandler extends AbstractReactorHandler {
     @Override
     protected void doHandle(Request request, Response response, ExecutionContext executionContext, Handler<Response> handler) {
         Response proxyResponse = mock(Response.class);
-        when(proxyResponse.headers()).thenReturn(new HttpHeaders());
+        when(proxyResponse.headers()).thenReturn(new DefaultHttpHeaders());
         when(proxyResponse.status()).thenReturn(HttpStatusCode.OK_200);
 
         handler.handle(proxyResponse);

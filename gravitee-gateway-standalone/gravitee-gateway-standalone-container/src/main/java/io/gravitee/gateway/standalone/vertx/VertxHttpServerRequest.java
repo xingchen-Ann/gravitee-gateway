@@ -24,6 +24,7 @@ import io.gravitee.common.utils.UUID;
 import io.gravitee.gateway.api.Request;
 import io.gravitee.gateway.api.buffer.Buffer;
 import io.gravitee.gateway.api.handler.Handler;
+import io.gravitee.gateway.http.connector.VertxBuffer;
 import io.gravitee.reporter.api.http.Metrics;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
@@ -47,7 +48,7 @@ class VertxHttpServerRequest implements Request {
 
     private MultiValueMap<String, String> queryParameters = null;
 
-    private HttpHeaders headers = null;
+    private final HttpHeaders headers;
 
     private final Metrics metrics;
 
@@ -56,6 +57,7 @@ class VertxHttpServerRequest implements Request {
         this.timestamp = System.currentTimeMillis();
         this.id = UUID.toString(UUID.random());
 
+        this.headers = new VertxHttpHeaders(httpServerRequest.headers());
         this.metrics = Metrics.on(timestamp).build();
         this.metrics.setRequestId(id());
         this.metrics.setHttpMethod(method());
@@ -112,14 +114,6 @@ class VertxHttpServerRequest implements Request {
 
     @Override
     public HttpHeaders headers() {
-        if (headers == null) {
-            MultiMap vertxHeaders = httpServerRequest.headers();
-            headers = new HttpHeaders(vertxHeaders.size());
-            for(Map.Entry<String, String> header : vertxHeaders) {
-                headers.add(header.getKey(), header.getValue());
-            }
-        }
-
         return headers;
     }
 
@@ -183,9 +177,9 @@ class VertxHttpServerRequest implements Request {
     @Override
     public Request bodyHandler(Handler<Buffer> bodyHandler) {
         if (! httpServerRequest.isEnded()) {
-            httpServerRequest.handler(event -> {
-                bodyHandler.handle(Buffer.buffer(event.getBytes()));
-                metrics.setRequestContentLength(metrics.getRequestContentLength() + event.length());
+            httpServerRequest.handler(chunk -> {
+                bodyHandler.handle(VertxBuffer.of(chunk));
+                metrics.setRequestContentLength(metrics.getRequestContentLength() + chunk.length());
             });
         }
 

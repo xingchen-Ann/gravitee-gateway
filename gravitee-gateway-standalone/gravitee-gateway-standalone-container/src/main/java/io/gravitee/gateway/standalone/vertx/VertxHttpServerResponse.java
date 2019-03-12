@@ -21,6 +21,7 @@ import io.gravitee.gateway.api.Response;
 import io.gravitee.gateway.api.buffer.Buffer;
 import io.gravitee.gateway.api.handler.Handler;
 import io.gravitee.gateway.api.stream.WriteStream;
+import io.gravitee.gateway.http.connector.VertxHttpHeaders;
 import io.gravitee.reporter.api.http.Metrics;
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.http.HttpServerRequest;
@@ -35,7 +36,7 @@ class VertxHttpServerResponse implements Response {
 
     private final HttpServerResponse httpServerResponse;
 
-    private final HttpHeaders headers = new HttpHeaders();
+    private final HttpHeaders headers;
 
     private final Metrics metrics;
 
@@ -43,7 +44,8 @@ class VertxHttpServerResponse implements Response {
 
     VertxHttpServerResponse(final HttpServerRequest httpServerRequest, final Metrics metrics) {
         this.httpServerResponse = httpServerRequest.response();
-        version = httpServerRequest.version();
+        this.version = httpServerRequest.version();
+        this.headers = new VertxHttpHeaders(httpServerResponse.headers());
         this.metrics = metrics;
     }
 
@@ -67,7 +69,7 @@ class VertxHttpServerResponse implements Response {
     public Response write(Buffer chunk) {
         if (valid()) {
             if (!httpServerResponse.headWritten()) {
-                writeHeaders();
+                cleanHeaders();
 
                 // Vertx requires to set the chunked flag if transfer_encoding header as the "chunked" value
                 String transferEncodingHeader = headers().getFirst(HttpHeaders.TRANSFER_ENCODING);
@@ -104,7 +106,7 @@ class VertxHttpServerResponse implements Response {
     public void end() {
         if (valid()) {
             if (!httpServerResponse.headWritten()) {
-                writeHeaders();
+                cleanHeaders();
             }
 
             httpServerResponse.end();
@@ -115,15 +117,15 @@ class VertxHttpServerResponse implements Response {
         return !httpServerResponse.closed() && !httpServerResponse.ended();
     }
 
-    private void writeHeaders() {
+    private void cleanHeaders() {
         // As per https://tools.ietf.org/html/rfc7540#section-8.1.2.2
         // connection-specific header fields must be remove from response headers
         headers.forEach((headerName, headerValues) -> {
-            if (version == HttpVersion.HTTP_1_0 || version == HttpVersion.HTTP_1_1
-                    || (!headerName.equalsIgnoreCase(HttpHeaders.CONNECTION)
-                    && !headerName.equalsIgnoreCase(HttpHeaders.KEEP_ALIVE)
-                    && !headerName.equalsIgnoreCase(HttpHeaders.TRANSFER_ENCODING))) {
-                httpServerResponse.putHeader(headerName, headerValues);
+            if (version != HttpVersion.HTTP_1_0 && version != HttpVersion.HTTP_1_1
+                    && (headerName.equalsIgnoreCase(HttpHeaders.CONNECTION)
+                    || headerName.equalsIgnoreCase(HttpHeaders.KEEP_ALIVE)
+                    || headerName.equalsIgnoreCase(HttpHeaders.TRANSFER_ENCODING))) {
+                headers.remove(headerName);
             }
         });
     }

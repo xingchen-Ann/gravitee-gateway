@@ -17,7 +17,7 @@ package io.gravitee.gateway.reactor;
 
 import io.gravitee.common.event.Event;
 import io.gravitee.common.event.impl.SimpleEvent;
-import io.gravitee.common.http.HttpHeaders;
+import io.gravitee.common.http.DefaultHttpHeaders;
 import io.gravitee.common.http.HttpMethod;
 import io.gravitee.common.http.HttpStatusCode;
 import io.gravitee.gateway.api.Request;
@@ -81,7 +81,7 @@ public class ReactorTest {
     public void processRequest_startedApi() throws Exception {
         Request request = mock(Request.class);
         when(request.method()).thenReturn(HttpMethod.GET);
-        when(request.headers()).thenReturn(new HttpHeaders());
+        when(request.headers()).thenReturn(new DefaultHttpHeaders());
         when(request.path()).thenReturn("/team");
         when(request.metrics()).thenReturn(Metrics.on(System.currentTimeMillis()).build());
 
@@ -91,7 +91,7 @@ public class ReactorTest {
 
         final CountDownLatch lock = new CountDownLatch(1);
         Response proxyResponse = mock(Response.class);
-        when(proxyResponse.headers()).thenReturn(new HttpHeaders());
+        when(proxyResponse.headers()).thenReturn(new DefaultHttpHeaders());
 
         reactor.route(request, proxyResponse, response -> {
             Assert.assertEquals(HttpStatusCode.OK_200, response.status());
