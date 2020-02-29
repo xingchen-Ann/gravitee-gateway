@@ -32,7 +32,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <gravitee.gateway.log.dir>${gravitee.home}/logs</gravitee.gateway.log.dir>
+        <gravitee.gateway.log.dir>./logs</gravitee.gateway.log.dir>
     </properties>
 
     <dependencies>

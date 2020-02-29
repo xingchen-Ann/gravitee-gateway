@@ -156,7 +156,7 @@ services:
     http:
       enabled: true
       port: 18082
-      host: localhost
+      host: 192.168.32.131
       authentication:
         # authentication type to be used for the core services
         # - none : to disable authentication
@@ -223,10 +223,10 @@ handlers:
 ds:
   mongodb:
     dbname: gravitee
-    host: localhost
+    host: 192.168.32.131
     port: 27017
   elastic:
-    host: localhost
+    host: 192.168.32.131
     port: 9200
 
 # Sharding tags configuration

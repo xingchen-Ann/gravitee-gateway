@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ReflectionUtils;
 
 import java.net.URI;
 import java.security.URIParameter;
@@ -72,6 +73,22 @@ public class VertxHttpClientTest {
     }
 
     @Test
+    public void testUnencodedWithEmptyQueryParam1() throws Exception {
+        HttpClientOptions httpOptions = mock(HttpClientOptions.class);
+        when(httpOptions.isEncodeURI()).thenReturn(false);
+        when(endpoint.getHttpClientOptions()).thenReturn(httpOptions);
+        ProxyRequest proxyRequest = ProxyRequestBuilder.from(request)
+                .method(HttpMethod.POST)
+                .uri(new URI("http://192.168.32.131:8082/test"))
+                .headers(new HttpHeaders())
+                .build();
+
+        vertxHttpClient.request(proxyRequest);
+
+        assertEquals("http://192.168.32.131/test", request.metrics().getEndpoint());
+    }
+
+    @Test
     public void testUnencodedWithoutQuery() throws Exception {
         HttpClientOptions httpOptions = mock(HttpClientOptions.class);
         when(httpOptions.isEncodeURI()).thenReturn(false);
@@ -81,7 +98,6 @@ public class VertxHttpClientTest {
                 .uri(new URI("http://gravitee.io/test"))
                 .headers(new HttpHeaders())
                 .build();
-
         vertxHttpClient.request(proxyRequest);
 
         assertEquals("http://gravitee.io/test", request.metrics().getEndpoint());
@@ -150,6 +166,8 @@ public class VertxHttpClientTest {
 
         assertEquals("http://gravitee.io/test?foo=&bar=", request.metrics().getEndpoint());
     }
+
+
 
     @Test
     public void testUnencodedWithNullQueryParam() throws Exception {
